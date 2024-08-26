@@ -38,7 +38,6 @@ class Attendance(models.Model):
         if not employee:
             raise ValidationError(_("Employee not found."))
 
-        current_time = datetime.now()
 
         # Find the last attendance record where the employee has checked in but not yet checked out
         last_attendance = self.env['hr.attendance'].search(
@@ -53,4 +52,4 @@ class Attendance(models.Model):
                     'empl_name': employee.name,
                 })
 
-        last_attendance.write({'check_out': current_time})
+        last_attendance.write({'check_out': datetime.now()})
