@@ -38,32 +38,19 @@ class Attendance(models.Model):
         if not employee:
             raise ValidationError(_("Employee not found."))
 
-        today = fields.Date.today()
-        existing_attendance = self.env['hr.attendance'].search([
-            ('employee_id', '=', employee.id),
-            ('date', '=', today)
-        ], limit=1)
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        if existing_attendance:
-            if existing_attendance.check_out:
-                raise ValidationError(
-                    _("Employee %(empl_name)s has already checked out today.") % {
-                        'empl_name': employee.name,
-                    })
-            else:
-                existing_attendance.write({'check_out': datetime.now()})
-                return  # Exit the method after updating
-
+        # Find the last attendance record where the employee has checked in but not yet checked out
         last_attendance = self.env['hr.attendance'].search(
             [('employee_id', '=', employee.id), ('check_out', '=', False)],
             order='id desc',
             limit=1
         )
-        
-        if not last_attendance:
+        print(last_attendance,"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+        if not last_attendance and  last_attendance.check_out != False :
             raise ValidationError(
                 _("No active check-in found for employee %(empl_name)s") % {
                     'empl_name': employee.name,
                 })
 
-        last_attendance.write({'check_out': datetime.now()})
+        last_attendance.write({'check_out': current_time})
