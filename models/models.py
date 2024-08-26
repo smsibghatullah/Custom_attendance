@@ -40,12 +40,8 @@ class Attendance(models.Model):
 
         current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        # Find the last attendance record where the employee has checked in but not yet checked out
-        last_attendance = self.env['hr.attendance'].search(
-            [('employee_id', '=', employee.id), ('check_out', '=', False)],
-            order='id desc',
-            limit=1
-        )
+        last_attendance = self.env['hr.attendance'].search([('employee_id', '=', employee.id),('check_in', '<=', current_time)], order='id desc',
+                                                               limit=1)
         print(last_attendance,"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
         if not last_attendance and  last_attendance.check_out != False :
             raise ValidationError(
