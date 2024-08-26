@@ -43,9 +43,10 @@ class Attendance(models.Model):
 
         existing_attendance = self.env['hr.attendance'].search([
             ('employee_id', '=', employee.id),
-            ('date', '=', current_date)
+            ('check_in', '>=', current_date)  # Check if the check_in is today
         ], limit=1)
 
+        # If an existing record is found, handle it
         if existing_attendance:
             if existing_attendance.check_out:
                 raise ValidationError(
@@ -53,12 +54,14 @@ class Attendance(models.Model):
                         'empl_name': employee.name,
                     })
             else:
+                # Update the existing attendance record with the current checkout time
                 existing_attendance.write({'check_out': current_time})
-                return  
+                return  # Exit the method after updating
 
+        # If no existing attendance record is found for today, check for a last check-in
         last_attendance = self.env['hr.attendance'].search([
             ('employee_id', '=', employee.id),
-            ('check_out', '=', False)  
+            ('check_out', '=', False)  # Ensure we find an active check-in
         ], order='id desc', limit=1)
 
         if not last_attendance:
@@ -67,4 +70,5 @@ class Attendance(models.Model):
                     'empl_name': employee.name,
                 })
 
+        # Update the last check-in record with the checkout time
         last_attendance.write({'check_out': current_time})
