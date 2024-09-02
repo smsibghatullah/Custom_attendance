@@ -71,5 +71,5 @@ class AccountPayment(models.Model):
                 print(payment_method_line,"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm")
                 if payment_method_line:
                     pay.payment_method_line_id = payment_method_line
-                else:
-                    raise ValidationError(_("The selected payment method is not available for this payment, please select the payment method again."))
+            # else:
+            #         raise ValidationError(_("The selected payment method is not available for this payment, please select the payment method again."))
